@@ -1,0 +1,77 @@
+To connect your Java application to a MySQL database using JDBC (Java Database Connectivity), you will need to create a JDBC configuration file or class that handles the database connection. Below is an example of how to set up a JDBC connection in a Java application, including a sample configuration class.
+
+Example JDBC Configuration Class
+You can create a class named DatabaseConfig.java that handles the JDBC connection. Here's how you can implement it:
+
+package com.yourusername.translator.config;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class DatabaseConfig {
+
+    private static final String URL = "jdbc:mysql://localhost:3306/translator_db"; // Update with your DB URL
+    private static final String USER = "your_mysql_username"; // Update with your DB username
+    private static final String PASSWORD = "your_mysql_password"; // Update with your DB password
+
+    public static Connection getConnection() {
+        Connection connection = null;
+        try {
+            // Load the MySQL JDBC driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            // Establish the connection
+            connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            System.out.println("Database connected successfully!");
+        } catch (ClassNotFoundException e) {
+            System.err.println("MySQL JDBC Driver not found.");
+            e.printStackTrace();
+        } catch (SQLException e) {
+            System.err.println("Connection to database failed.");
+            e.printStackTrace();
+        }
+        return connection;
+    }
+}
+Using the JDBC Configuration
+You can use this DatabaseConfig class to get a connection to the database in your service class. Here’s an example of how to use it:
+package com.yourusername.translator.service;
+
+import com.yourusername.translator.config.DatabaseConfig;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class TranslationService {
+
+    public void saveTranslationHistory(String originalText, String translatedText, String sourceLanguage, String targetLanguage) {
+        String insertSQL = "INSERT INTO translation_history (original_text, translated_text, source_language, target_language) VALUES (?, ?, ?, ?)";
+
+        try (Connection connection = DatabaseConfig.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
+
+            preparedStatement.setString(1, originalText);
+            preparedStatement.setString(2, translatedText);
+            preparedStatement.setString(3, sourceLanguage);
+            preparedStatement.setString(4, targetLanguage);
+            preparedStatement.executeUpdate();
+
+            System.out.println("Translation history saved successfully!");
+
+        } catch (SQLException e) {
+            System.err.println("Error while saving translation history.");
+            e.printStackTrace();
+        }
+    }
+}
+Important Notes
+Database Table: Make sure you have created the translation_history table in your MySQL database. You can use the following SQL query to create the table:
+CREATE TABLE translation_history (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    original_text TEXT NOT NULL,
+    translated_text TEXT NOT NULL,
+    source_language VARCHAR(10) NOT NULL,
+    target_language VARCHAR(10) NOT NULL
+);
+Dependencies: Ensure you have the MySQL Connector/J dependency in your pom.xml:
