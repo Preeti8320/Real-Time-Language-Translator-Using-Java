@@ -1,0 +1,120 @@
+A DAO (Data Access Object) class is responsible for encapsulating the data access logic for a specific entity. In your case, you might want to create a DAO class for managing the TranslationHistory entity. Below is an example of how to implement a DAO class for the TranslationHistory entity in a Java application using JDBC.
+
+Example DAO Class for 'TranslationHistory'
+package com.yourusername.translator.dao;
+
+import com.yourusername.translator.config.DatabaseConfig;
+import com.yourusername.translator.model.TranslationHistory;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class TranslationHistoryDAO {
+
+    // Method to save translation history
+    public void save(TranslationHistory translationHistory) {
+        String insertSQL = "INSERT INTO translation_history (original_text, translated_text, source_language, target_language) VALUES (?, ?, ?, ?)";
+
+        try (Connection connection = DatabaseConfig.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
+
+            preparedStatement.setString(1, translationHistory.getOriginalText());
+            preparedStatement.setString(2, translationHistory.getTranslatedText());
+            preparedStatement.setString(3, translationHistory.getSourceLanguage());
+            preparedStatement.setString(4, translationHistory.getTargetLanguage());
+            preparedStatement.executeUpdate();
+
+            System.out.println("Translation history saved successfully!");
+
+        } catch (SQLException e) {
+            System.err.println("Error while saving translation history.");
+            e.printStackTrace();
+        }
+    }
+
+    // Method to retrieve all translation histories
+    public List<TranslationHistory> findAll() {
+        List<TranslationHistory> histories = new ArrayList<>();
+        String selectSQL = "SELECT * FROM translation_history";
+
+        try (Connection connection = DatabaseConfig.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(selectSQL);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            while (resultSet.next()) {
+                TranslationHistory history = new TranslationHistory();
+                history.setId(resultSet.getLong("id"));
+                history.setOriginalText(resultSet.getString("original_text"));
+                history.setTranslatedText(resultSet.getString("translated_text"));
+                history.setSourceLanguage(resultSet.getString("source_language"));
+                history.setTargetLanguage(resultSet.getString("target_language"));
+                histories.add(history);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error while retrieving translation histories.");
+            e.printStackTrace();
+        }
+
+        return histories;
+    }
+
+    // Method to find a translation history by ID
+    public TranslationHistory findById(Long id) {
+        TranslationHistory history = null;
+        String selectSQL = "SELECT * FROM translation_history WHERE id = ?";
+
+        try (Connection connection = DatabaseConfig.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(selectSQL)) {
+
+            preparedStatement.setLong(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                history = new TranslationHistory();
+                history.setId(resultSet.getLong("id"));
+                history.setOriginalText(resultSet.getString("original_text"));
+                history.setTranslatedText(resultSet.getString("translated_text"));
+                history.setSourceLanguage(resultSet.getString("source_language"));
+                history.setTargetLanguage(resultSet.getString("target_language"));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error while retrieving translation history by ID.");
+            e.printStackTrace();
+        }
+
+        return history;
+    }
+
+    // Method to delete a translation history by ID
+    public void delete(Long id) {
+        String deleteSQL = "DELETE FROM translation_history WHERE id = ?";
+
+        try (Connection connection = DatabaseConfig.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(deleteSQL)) {
+
+            preparedStatement.setLong(1, id);
+            preparedStatement.executeUpdate();
+
+            System.out.println("Translation history deleted successfully!");
+
+        } catch (SQLException e) {
+            System.err.println("Error while deleting translation history.");
+            e.printStackTrace();
+        }
+    }
+}
+Explanation of the DAO Class
+Class Structure: The TranslationHistoryDAO class contains methods to perform CRUD (Create, Read, Update, Delete) operations on the TranslationHistory entity.
+
+Methods:
+
+save(TranslationHistory translationHistory): Inserts a new translation history record into the database.
+findAll(): Retrieves all translation history records from the database and returns them as a list.
+findById(Long id): Retrieves a specific translation history record by its ID.
+delete(Long id): Deletes a translation history record from the database by its ID.
+Using JDBC: Each method uses JDBC to connect to the database, prepare SQL statements, execute them, and handle results.
+
+Error Handling: Basic error handling is included to catch SQL exceptions and print error messages.
