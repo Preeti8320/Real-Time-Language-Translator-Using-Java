@@ -1,0 +1,111 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Headings */
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+/* Form Styles */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin: 10px 0 5px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Button Styles */
+button {
+    padding: 10px;
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #4cae4c;
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+/* Link Styles */
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Confirmation Dialog */
+.confirmation {
+    color: red;
+    font-weight: bold;
+}
+
+General Styles: Basic styles for the body and container to set the background and layout.
+Headings: Styles for the main headings to ensure they are centered and have a consistent color.
+Form Styles: Styles for form elements, including labels and input fields, to ensure they are user-friendly and visually appealing.
+Button Styles: Styles for buttons, including hover effects to enhance user interaction.
+Table Styles: Styles for tables to ensure they are readable and well-structured.
+Link Styles: Styles for links to ensure they are visually distinct and provide feedback on hover.
+Confirmation Dialog: A class for any confirmation messages that may need to be displayed in red.
+Usage
+You can link this CSS file in your HTML templates by including the following line in the <head> section:
+
+html
+
+Verify
+
+Open In Editor
+Run
+Copy code
+<link rel="stylesheet" href="styles.css">
+This structured approach will help you maintain and update your styles more easily as your application grows. You can also add more classes as needed for additional components or features in your user management system.
