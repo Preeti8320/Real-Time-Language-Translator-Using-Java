@@ -1,0 +1,121 @@
+real-time-language-translator/
+│
+├── src/
+│   └── main/
+│       └── java/
+│           └── com/
+│               └── translator/
+│                   └── TranslatorApplication.java
+│
+├── web/
+│   ├── index.html
+│   ├── css/
+│   │   └── styles.css
+│   └── js/
+│       └── translator.js
+│
+└── pom.xml (if using Maven)
+
+1. Java Backend (TranslatorApplication.java)
+This is a simple Spring Boot application that will handle the translation requests.
+
+package com.translator;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.*;
+
+@SpringBootApplication
+@RestController
+@RequestMapping("/api")
+public class TranslatorApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(TranslatorApplication.class, args);
+    }
+
+    @GetMapping("/translate")
+    public String translate(@RequestParam String text, @RequestParam String targetLang) {
+        // Here you would integrate with a translation API (like Google Translate API)
+        // For demonstration, we will just return the text with a suffix
+        return text + " (translated to " + targetLang + ")";
+    }
+}
+
+2. HTML Frontend (index.html)
+This is the main HTML file that will use Bootstrap for styling.2. HTML Frontend (index.html)
+This is the main HTML file that will use Bootstrap for styling.
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Language Translator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Real-Time Language Translator</h1>
+        <div class="form-group">
+            <label for="textToTranslate">Text to Translate:</label>
+            <textarea class="form-control" id="textToTranslate" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="targetLanguage">Select Target Language:</label>
+            <select class="form-control" id="targetLanguage">
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="zh">Chinese</option>
+                <!-- Add more languages as needed -->
+            </select>
+        </div>
+        <button class="btn btn-primary" id="translateButton">Translate</button>
+        <h3 class="mt-4">Translated Text:</h3>
+        <div id="translatedText" class="border p-3"></div>
+    </div>
+
+    <script src="js/translator.js"></script>
+</body>
+</html>
+
+3. CSS Styles (styles.css)
+You can add custom styles here.
+
+body {
+    background-color: #f8f9fa;
+}
+
+#translatedText {
+    min-height: 100px;
+}
+
+4. JavaScript for AJAX (translator.js)
+This script will handle the translation request.
+
+document.getElementById('translateButton').addEventListener('click', function() {
+    const textToTranslate = document.getElementById('textToTranslate').value;
+    const targetLanguage = document.getElementById('targetLanguage').value;
+
+    fetch(`/api/translate?text=${encodeURIComponent(textToTranslate)}&targetLang=${targetLanguage}`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('translatedText').innerText = data;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+});
+
+5. Maven Configuration (pom.xml)
+If you're using Maven, you can set up your pom.xml to include Spring Boot dependencies.
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.translator</groupId>
+    <artifactId>real-time
+
