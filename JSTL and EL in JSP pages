@@ -1,0 +1,437 @@
+Using JavaServer Pages Standard Tag Library (JSTL) and Expression Language (EL) in your JSP pages can significantly enhance the readability and maintainability of your code. JSTL provides a set of tags that simplify common tasks such as iteration, conditionals, and formatting, while EL allows you to access data in a more concise way.
+
+Step 1: Add JSTL Dependency
+If you are using Maven, add the following dependency to your pom.xml:
+<dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>jstl</artifactId>
+    <version>1.2</version>
+</dependency>
+If you are not using Maven, download the JSTL library and add it to your project’s WEB-INF/lib directory.
+
+Step 2: Update JSP Pages to Use JSTL and EL
+1. register.jsp
+Here’s how you can update the register.jsp page to use JSTL and EL:
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Registration</title>
+</head>
+<body>
+    <h1>User Registration</h1>
+    <form action="register" method="post">
+        <label for="username">Username:</label><br>
+        <input type="text" id="username" name="username" required><br>
+        
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password" required><br>
+        
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br>
+        
+        <label for="full_name">Full Name:</label><br>
+        <input type="text" id="full_name" name="full_name" required><br><br>
+        
+        <input type="submit" value="Register">
+    </form>
+    <p>Already have an account? <a href="login.jsp">Login here</a>.</p>
+</body>
+</html>
+2. login.jsp
+Update the login.jsp page:
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Login</title>
+</head>
+<body>
+    <h1>User Login</h1>
+    <form action="login" method="post">
+        <label for="username">Username:</label><br>
+        <input type="text" id="username" name="username" required><br>
+        
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password" required><br><br>
+        
+        <input type="submit" value="Login">
+    </form>
+    <p>Don't have an account? <a href="register.jsp">Register here</a>.</p>
+</body>
+</html>
+3. profile.jsp
+Update the profile.jsp page to use JSTL and EL:
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page import="com.user.User" %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+</head>
+<body>
+    <h1>User Profile</h1>
+    <c:choose>
+        <c:when test="${not empty user}">
+            <p><strong>Username:</strong> ${user.username}</p>
+            <p><strong>Email:</strong> ${user.email}</p>
+            <p><strong>Full Name:</strong> ${user.fullName}</p>
+            
+            <h2>Update Profile</h2>
+            <form action="updateProfile" method="post">
+                <input type="hidden" name="username" value="${user.username}"/>
+                <label for="email">Update Email:</label><br>
+                <input type="email" name="email" value="${user.email}" required/><br>
+                <label for="full_name">Update Full Name:</label><br>
+                <input type="text" name="full_name" value="${user.fullName}" required/><br>
+                <
+Complete profile.jsp
+Here’s the complete implementation of the profile.jsp page:
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page import="com.user.User" %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+</head>
+<body>
+    <h1>User Profile</h1>
+    <c:choose>
+        <c:when test="${not empty user}">
+            <p><strong>Username:</strong> ${user.username}</p>
+            <p><strong>Email:</strong> ${user.email}</p>
+            <p><strong>Full Name:</strong> ${user.fullName}</p>
+            
+            <h2>Update Profile</h2>
+            <form action="updateProfile" method="post">
+                <input type="hidden" name="username" value="${user.username}"/>
+                <label for="email">Update Email:</label><br>
+                <input type="email" name="email" value="${user.email}" required/><br>
+                <label for="full_name">Update Full Name:</label><br>
+                <input type="text" name="full_name" value="${user.fullName}" required/><br>
+                <input type="submit" value="Update Profile"/>
+            </form>
+        </c:when>
+        <c:otherwise>
+            <p>User not found.</p>
+        </c:otherwise>
+    </c:choose>
+    <a href="login.jsp">Logout</a>
+</body>
+</html>
+Explanation of profile.jsp
+JSTL and EL Usage:
+
+The <c:choose>, <c:when>, and <c:otherwise> tags are used to conditionally display content based on whether the user object is present.
+The ${user.username}, ${user.email}, and ${user.fullName} expressions are used to access the properties of the User  object directly using EL.
+Form for Updating Profile:
+
+The form allows users to update their email and full name. The values are pre-filled using EL to show the current values.
+4. userList.jsp
+Here’s how to implement the userList.jsp page using JSTL and EL:
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page import="java.util.List" %>
+<%@ page import="com.user.User" %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User List</title>
+</head>
+<body>
+    <h1>Registered Users</h1>
+    <c:choose>
+        <c:when test="${not empty userList}">
+            <table border="1">
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Full Name</th>
+                </tr>
+                <c:forEach var="user" items="${userList}">
+                    <tr>
+                        <td>${user.username}</td>
+                        <td>${user.email}</td>
+                        <td>${user.fullName}</td>
+                    </tr>
+                </c:forEach>
+            </table>
+        </c:when>
+        <c:otherwise>
+            <p>No users found.</p>
+        </c:otherwise>
+    </c:choose>
+    <a href="profile.jsp">Back to Profile</a>
+</body>
+</html>
+Explanation of userList.jsp
+JSTL and EL Usage:
+The <c:choose>, <c:when>, and <c:otherwise> tags are used to check if the userList is not empty.
+The <c:forEach> tag iterates over the userList, displaying each user's details in a table format.
+5. Update the Servlets to Use EL and JSTL
+Make sure that your servlets set the user and user list attributes correctly so that they can be accessed in the JSP pages.
+
+Example: Update ProfileServlet.java
+Ensure that the ProfileServlet sets the user attribute correctly:
+protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    String username = request.getParameter("username");
+
+    try {
+        // Database connection
+Complete ProfileServlet.java
+Here’s the complete implementation of the ProfileServlet.java:
+package com.user;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+@WebServlet("/profile")
+public class ProfileServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String username = request.getParameter("username"); // Assume username is passed as a query parameter
+
+        try {
+            // Database connection
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/user_db", "root", "password");
+
+            // Fetch user details
+            String sql = "SELECT * FROM users WHERE username = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, username);
+            ResultSet resultSet = statement.executeQuery();
+
+            // Create User object and set it as a request attribute
+            User user = null;
+            if (resultSet.next()) {
+                user = new User();
+                user.setId(resultSet.getInt("id"));
+                user.setUsername(resultSet.getString("username"));
+                user.setEmail(resultSet.getString("email"));
+                user.setFullName(resultSet.getString("full_name"));
+            }
+
+            // Set user object as a request attribute
+            request.setAttribute("user", user);
+
+            // Forward to profile.jsp
+            request.getRequestDispatcher("profile.jsp").forward(request, response);
+
+            // Close connections
+            resultSet.close();
+            statement.close();
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error fetching profile.");
+        }
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String username = request.getParameter("username");
+        String email = request.getParameter("email");
+        String fullName = request.getParameter("full_name");
+
+        try {
+            // Database connection
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/user_db", "root", "password");
+
+            // Update user details
+            String sql = "UPDATE users SET email = ?, full_name = ? WHERE username = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, email);
+            statement.setString(2, fullName);
+            statement.setString(3, username);
+            statement.executeUpdate();
+
+            // Close connections
+            statement.close();
+            connection.close();
+
+            // Redirect to profile page
+            response.sendRedirect("profile?username=" + username);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error updating profile.");
+        }
+    }
+}
+Explanation of ProfileServlet.java
+doGet Method:
+
+Retrieves the username from the request.
+Connects to the database and fetches user details.
+Creates a User  object and sets it as a request attribute.
+Forwards the request to profile.jsp to display the user profile.
+doPost Method:
+
+Retrieves updated user information from the request.
+Connects to the database and updates the user details.
+Redirects back to the profile page after updating.
+Step 6: Update Other Servlets
+Make sure that other servlets, such as RegistrationServlet and LoginServlet, are also correctly implemented to set attributes that can be accessed in the JSP pages.
+
+Example: Update RegistrationServlet.java
+Here’s how you can update the RegistrationServlet to redirect to the registrationSuccess.jsp page after a successful registration:
+package com.user;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+
+@WebServlet("/register")
+public class RegistrationServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        String email = request.getParameter("email");
+        String fullName = request.getParameter("full_name");
+
+        try {
+            // Database
+Complete RegistrationServlet.java
+Here’s the complete implementation of the RegistrationServlet.java:
+package com.user;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+
+@WebServlet("/register")
+public class RegistrationServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        String email = request.getParameter("email");
+        String fullName = request.getParameter("full_name");
+
+        try {
+            // Database connection
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/user_db", "root", "password");
+
+            // Insert user into database
+            String sql = "INSERT INTO users (username, password, email, full_name) VALUES (?, ?, ?, ?)";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, username);
+            statement.setString(2, password); // In a real application, hash the password
+            statement.setString(3, email);
+            statement.setString(4, fullName);
+            statement.executeUpdate();
+
+            // Close connection
+            statement.close();
+            connection.close();
+
+            // Redirect to registration success page
+            response.sendRedirect("registrationSuccess.jsp");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Registration failed.");
+        }
+    }
+}
+Explanation of RegistrationServlet.java
+doPost Method:
+Retrieves user input from the registration form.
+Connects to the database and inserts the new user into the users table.
+After successfully inserting the user, it redirects to registrationSuccess.jsp.
+If an error occurs, it prints the stack trace and sends an internal server error response.
+Step 7: Create registrationSuccess.jsp
+Here’s how to implement the registrationSuccess.jsp page to confirm successful registration:
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registration Successful</title>
+</head>
+<body>
+    <h1>Registration Successful</h1>
+    <p>Thank you for registering! You can now <a href="login.jsp">login</a>.</p>
+</body>
+</html>
+Step 8: Update LoginServlet.java
+Ensure that the LoginServlet is implemented to validate user credentials and redirect to the profile page:
+package com.user;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+@WebServlet("/login")
+public class LoginServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+
+        try {
+            // Database connection
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/user_db", "root", "password");
+
+            // Check user credentials
+            String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, username);
+            statement.setString(2, password); // In a real application, hash the password
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                // Successful login
+                response.sendRedirect("profile?username=" + username);
+            } else {
+                // Invalid credentials
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid username or password.");
+            }
+
+            // Close connections
+            resultSet.close();
+            statement.close();
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error during login.");
+        }
+    }
+}
+Final Steps: Testing the Application
+Deploy the Application: Ensure your servlet is deployed on your Tomcat server.
+
