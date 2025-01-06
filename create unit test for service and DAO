@@ -1,0 +1,328 @@
+Prerequisites
+JUnit: Ensure you have JUnit in your project dependencies. If you're using Maven, add the following dependency to your pom.xml:
+
+<dependency>
+    <groupId>junit</groupId>
+    <artifactId>junit</artifactId>
+    <version>4.13.2</version>
+    <scope>test</scope>
+</dependency>
+Mockito: Add Mockito for mocking dependencies:
+  <dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-core</artifactId>
+    <version>3.11.2</version>
+    <scope>test</scope>
+</dependency>
+  Example DAO Class
+Let's assume you have a User DAO class that interacts with the database:
+    package com.user;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+public class UserDAO {
+    private String jdbcURL = "jdbc:mysql://localhost:3306/user_db";
+    private String jdbcUsername = "root";
+    private String jdbcPassword = "password";
+
+    public User getUser ByUsername(String username) {
+        User user = null;
+        try (Connection connection = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE username = ?")) {
+            statement.setString(1, username);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                user = new User();
+                user.setId(resultSet.getInt("id"));
+                user.setUsername(resultSet.getString("username"));
+                user.setEmail(resultSet.getString("email"));
+                user.setFullName(resultSet.getString("full_name"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+    public void saveUser (User user) {
+        try (Connection connection = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
+             PreparedStatement statement = connection.prepareStatement("INSERT INTO users (username, password, email, full_name) VALUES (?, ?, ?, ?)")) {
+            statement.setString(1, user.getUsername());
+            statement.setString(2, user.getPassword());
+            statement.setString(3, user.getEmail());
+            statement.setString(4, user.getFullName());
+            statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+      Example Service Class
+Assuming you have a User Service class that uses the User DAO:
+        package com.user;
+
+public class UserService {
+    private UserDAO userDAO;
+
+    public UserService(UserDAO userDAO) {
+        this.userDAO = userDAO;
+    }
+
+    public User getUser (String username) {
+        return userDAO.getUser ByUsername(username);
+    }
+
+    public void registerUser (User user) {
+        userDAO.saveUser (user);
+    }
+}
+          Unit Tests for DAO
+Now, let's create unit tests for the User DAO class. We will use an in-memory database (like H2) for testing purposes.
+
+UserDAOTest.java
+                  package com.user;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+
+import static org.junit.Assert.assertEquals;
+
+public class UserDAOTest {
+    private UserDAO userDAO;
+    private Connection connection;
+
+    @Before
+    public void setUp() throws Exception {
+        // Set up in-memory database
+        connection = DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "sa", "");
+        Statement statement = connection.createStatement();
+        statement.execute("CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(50), password VARCHAR(255), email VARCHAR(100), full_name VARCHAR(100))");
+        userDAO = new UserDAO();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        connection.close();
+    }
+
+    @Test
+    public void testSaveUser () {
+        User user = new User();
+        user.setUsername("testuser");
+        user.setPassword("password");
+        user.setEmail("test@example.com");
+        user.setFullName("Test User");
+
+        userDAO.saveUser (user);
+
+        User retrievedUser  = userDAO.getUser ByUsername("testuser");
+        assertEquals("testuser", retrievedUser .getUsername());
+        assertEquals("test@example.com", retrievedUser .getEmail());
+        assertEquals
+                        Complete User DAOTest.java
+Here’s the complete implementation of the User DAOTest.java:
+                        package com.user;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+
+import static org.junit.Assert.assertEquals;
+
+public class UserDAOTest {
+    private UserDAO userDAO;
+    private Connection connection;
+
+    @Before
+    public void setUp() throws Exception {
+        // Set up in-memory database
+        connection = DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "sa", "");
+        Statement statement = connection.createStatement();
+        statement.execute("CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(50), password VARCHAR(255), email VARCHAR(100), full_name VARCHAR(100))");
+        
+        // Initialize UserDAO with the in-memory connection
+        userDAO = new UserDAO();
+        userDAO.setConnection(connection); // Assuming you have a method to set the connection
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        connection.close();
+    }
+
+    @Test
+    public void testSaveUser () {
+        User user = new User();
+        user.setUsername("testuser");
+        user.setPassword("password"); // In a real application, hash the password
+        user.setEmail("test@example.com");
+        user.setFullName("Test User");
+
+        userDAO.saveUser (user);
+
+        User retrievedUser  = userDAO.getUser ByUsername("testuser");
+        assertEquals("testuser", retrievedUser .getUsername());
+        assertEquals("test@example.com", retrievedUser .getEmail());
+        assertEquals("Test User", retrievedUser .getFullName());
+    }
+
+    @Test
+    public void testGetUser ByUsername() {
+        User user = new User();
+        user.setUsername("anotheruser");
+        user.setPassword("password"); // In a real application, hash the password
+        user.setEmail("another@example.com");
+        user.setFullName("Another User");
+
+        userDAO.saveUser (user);
+
+        User retrievedUser  = userDAO.getUser ByUsername("anotheruser");
+        assertEquals("anotheruser", retrievedUser .getUsername());
+        assertEquals("another@example.com", retrievedUser .getEmail());
+        assertEquals("Another User", retrievedUser .getFullName());
+    }
+}
+                          Explanation of User DAOTest.java
+Setup and Teardown:
+
+The setUp() method creates an in-memory H2 database and initializes the User DAO with a connection to this database.
+The tearDown() method closes the database connection after each test.
+Test Methods:
+
+testSaveUser (): This test creates a new user, saves it to the database, and then retrieves it to verify that the data was saved correctly.
+testGetUser ByUsername(): This test saves another user and retrieves it by username to ensure the retrieval method works as expected.
+Example Service Test
+Now, let's create a unit test for the User Service class. This will involve mocking the User DAO to isolate the service layer.
+
+UserServiceTest.java
+                              package com.user;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import static org.mockito.Mockito.*;
+
+public class UserServiceTest {
+    private UserDAO userDAO;
+    private UserService userService;
+
+    @Before
+    public void setUp() {
+        userDAO = Mockito.mock(UserDAO.class);
+        userService = new UserService(userDAO);
+    }
+
+    @Test
+    public void testGetUser () {
+        User mockUser  = new User();
+        mockUser .setUsername("testuser");
+        mockUser .setEmail("test@example.com");
+        mockUser .setFullName("Test User");
+
+        when(userDAO.getUser ByUsername("testuser")).thenReturn(mockUser );
+
+        User retrievedUser  = userService.getUser ("testuser");
+        assertEquals("testuser", retrievedUser .getUsername());
+        assertEquals("test@example.com", retrievedUser .getEmail());
+        assertEquals("Test User", retrievedUser .getFullName());
+    }
+
+    @Test
+    public void testRegisterUser () {
+        User user = new User();
+        user.setUsername("newuser");
+        user.setPassword("password"); // In a real application, hash the password
+        user.setEmail("new@example.com");
+        user.setFullName("New User");
+
+        userService.registerUser (user);
+
+        // Verify that the saveUser  method was called on the DAO
+        verify(userDAO, times(1)).saveUser (user);
+    }
+}
+                                Complete User ServiceTest.java
+Here’s the complete implementation of the User ServiceTest.java:
+                                package com.user;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
+
+public class UserServiceTest {
+    private UserDAO userDAO;
+    private UserService userService;
+
+    @Before
+    public void setUp() {
+        userDAO = Mockito.mock(UserDAO.class);
+        userService = new UserService(userDAO);
+    }
+
+    @Test
+    public void testGetUser () {
+        User mockUser  = new User();
+        mockUser .setUsername("testuser");
+        mockUser .setEmail("test@example.com");
+        mockUser .setFullName("Test User");
+
+        // Mock the behavior of the DAO
+        when(userDAO.getUser ByUsername("testuser")).thenReturn(mockUser );
+
+        // Call the service method
+        User retrievedUser  = userService.getUser ("testuser");
+
+        // Verify the results
+        assertEquals("testuser", retrievedUser .getUsername());
+        assertEquals("test@example.com", retrievedUser .getEmail());
+        assertEquals("Test User", retrievedUser .getFullName());
+    }
+
+    @Test
+    public void testRegisterUser () {
+        User user = new User();
+        user.setUsername("newuser");
+        user.setPassword("password"); // In a real application, hash the password
+        user.setEmail("new@example.com");
+        user.setFullName("New User");
+
+        // Call the service method
+        userService.registerUser (user);
+
+        // Verify that the saveUser  method was called on the DAO
+        verify(userDAO, times(1)).saveUser (user);
+    }
+}
+                                  Explanation of User ServiceTest.java
+Setup:
+
+The setUp() method initializes a mock User DAO using Mockito and creates an instance of User Service with the mocked DAO.
+Test Methods:
+
+testGetUser ():
+This test creates a mock User  object and sets up the User DAO to return this mock user when getUser ByUsername is called with "testuser".
+It then calls the getUser  method of the User Service and verifies that the returned user matches the expected values.
+testRegisterUser ():
+This test creates a new User  object and calls the registerUser  method of the User Service.
+It verifies that the saveUser  method of the User DAO was called exactly once with the correct user object.
+Running the Tests
+To run the tests, you can use your IDE's built-in test runner or run them from the command line using Maven:
+                                  mvn test
+                                  Conclusion
+You now have unit tests for both the User DAO and User Service classes. These tests ensure that your data access and business logic layers are functioning correctly. By using Mockito, you can isolate the tests and focus on the behavior of each class without relying on the actual database or other external systems.
